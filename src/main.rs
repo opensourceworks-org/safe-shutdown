@@ -9,7 +9,7 @@ use dotenv::dotenv;
 use std::net::SocketAddr;
 use std::sync::Arc;
 
-#[tokio::main] // This attribute allows async main function
+#[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let port = std::env::var("PORT").unwrap_or_else(|_| "8999".to_string());
     let safe_path = std::env::var("SAFE_PATH").unwrap_or_else(|_| "/tmp".to_string());
