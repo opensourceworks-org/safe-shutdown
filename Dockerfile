@@ -23,10 +23,11 @@ FROM alpine:latest
 # RUN apk add --no-cache libssl1.1
 
 # Copy the compiled binary from the builder stage
-COPY --from=builder /usr/src/app/target/release/safe-shutdown /usr/local/bin/safe-shutdown
+COPY --from=builder /usr/src/app/target/release/safe-shutdown /usr/src/app/safe-shutdown
 
+WORKDIR /usr/src/app
 # Set the binary as the entry point
-ENTRYPOINT ["/usr/local/bin/safe-shutdown"]
+# ENTRYPOINT ["/usr/src/app/safe-shutdown"]
 
 # Optionally, expose a port (adjust as needed)
 EXPOSE 8080
