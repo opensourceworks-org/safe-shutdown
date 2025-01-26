@@ -7,33 +7,18 @@ RUN apt-get update && \
 ARG REPO_URL=https://github.com/jeroenflvr/safe-shutdown.git
 ARG BRANCH=main
 
-# Clone the specified branch of the repository into /usr/src/app
 RUN git clone --branch $BRANCH $REPO_URL /usr/src/app
 
-# Set the working directory
 WORKDIR /usr/src/app
 
-# Build the project in release mode
 RUN cargo build --release
+#
+# === Stage 2 ===
+FROM debian:bookworm
 
-# === Stage 2: Create the runtime image ===
-FROM alpine:latest
+RUN apt update && apt install -y tini && apt clean
+COPY --from=builder /usr/src/app/target/release/safe-shutdown /usr/local/bin/safe-shutdown
 
-# Install necessary libraries (if your binary is not fully static)
-# RUN apk add --no-cache libssl1.1
+ENTRYPOINT ["/usr/bin/tini"]
 
-# Copy the compiled binary from the builder stage
-COPY --from=builder /usr/src/app/target/release/safe-shutdown /usr/src/app/safe-shutdown
-
-WORKDIR /usr/src/app
-# Set the binary as the entry point
-# ENTRYPOINT ["/usr/src/app/safe-shutdown"]
-
-# Optionally, expose a port (adjust as needed)
-EXPOSE 8080
-
-# Option 2: Using scratch for an even smaller image (binary must be statically linked)
-# FROM scratch
-# COPY --from=builder /usr/src/app/target/release/my_binary /my_binary
-# ENTRYPOINT ["/my_binary"]
-# EXPOSE 8080
+EXPOSE 8999
